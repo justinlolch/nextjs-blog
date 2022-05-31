@@ -44,11 +44,9 @@ export default function PostContent(props) {
       const { className, children } = code;
       const language = className.split("-")[1];
       return (
-        <SyntaxHighlighter
-          style={atomDark}
-          language={language}
-          children={children}
-        />
+        <SyntaxHighlighter style={atomDark} language={language}>
+          {children}
+        </SyntaxHighlighter>
       );
     },
   };

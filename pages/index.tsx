@@ -8,7 +8,7 @@ export default function Home(props) {
   return (
     <Fragment>
       <Head>
-        <title>Justin' Blog</title>
+        <title>Justin&quot; Blog</title>
         <meta name="description" content="Justin's Blog for posting about programming and web development" />
       </Head>
       <Hero />
