@@ -1,25 +1,97 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "../../styles/contact-form.module.css";
+import Notification from "../ui/notification";
+
+enum RequestStatus {
+  INITIAL = "initial",
+  PENDING = "pending",
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+async function sendContactData(contactDeatils) {
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    body: JSON.stringify(contactDeatils),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong!");
+  }
+}
 
 export default function ContactForm() {
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredName, setEnteredName] = useState("");
   const [enteredMessage, setEnteredMessage] = useState("");
+  const [requestStatus, setRequestStatus] = useState<RequestStatus>(
+    RequestStatus.INITIAL
+  );
+  const [requestError, setRequestError] = useState();
 
-  function sendMessageHandler(event) {
+  useEffect(() => {
+    if (
+      requestStatus === RequestStatus.SUCCESS ||
+      requestStatus === RequestStatus.ERROR
+    ) {
+      const timer = setTimeout(() => {
+        setRequestStatus(RequestStatus.INITIAL);
+        setRequestError(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [requestStatus]);
+
+  async function sendMessageHandler(event) {
     event.preventDefault();
 
-    fetch("/api/contact", {
-      method: "POST",
-      body: JSON.stringify({
+    setRequestStatus(RequestStatus.PENDING);
+    try {
+      await sendContactData({
         email: enteredEmail,
         name: enteredName,
         message: enteredMessage,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+      });
+      setRequestStatus(RequestStatus.SUCCESS);
+      setEnteredEmail("");
+      setEnteredName("");
+      setEnteredMessage("");
+    } catch (error) {
+      setRequestError(error.message);
+      setRequestStatus(RequestStatus.ERROR);
+    }
+  }
+
+  let notification;
+
+  if (requestStatus === RequestStatus.PENDING) {
+    notification = {
+      status: RequestStatus.PENDING,
+      title: "Sending message...",
+      message: "Please wait...",
+    };
+  }
+
+  if (requestStatus === RequestStatus.SUCCESS) {
+    notification = {
+      status: RequestStatus.SUCCESS,
+      title: "Success!",
+      message: "Your message has been sent!",
+    };
+  }
+
+  if (requestStatus === RequestStatus.ERROR) {
+    notification = {
+      status: RequestStatus.ERROR,
+      title: "Error!",
+      message: requestError,
+    };
   }
 
   return (
@@ -63,6 +135,13 @@ export default function ContactForm() {
           <button>Send Message</button>
         </div>
       </form>
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
     </section>
   );
 }
