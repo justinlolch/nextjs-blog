@@ -1,15 +1,21 @@
 import AllPosts from "../../components/posts/all-posts";
+import { getAllPosts } from "../../lib/posts-util";
 
-const DUMMY_POSTS = [
-    {title: "Post 1", slug: "post-1", date: "2020-01-01", image: "getting-started-nextjs.png", excerpt: "This is the first post"},
-    {title: "Post 2", slug: "post-2", date: "2020-01-01", image: "getting-started-nextjs.png", excerpt: "This is the first post"},
-    {title: "Post 3", slug: "post-3", date: "2020-01-01", image: "getting-started-nextjs.png", excerpt: "This is the first post"},
-    {title: "Post 4", slug: "post-4", date: "2020-01-01", image: "getting-started-nextjs.png", excerpt: "This is the first post"},
-  ];
-
-export default function AllPostsPage(){
+export default function AllPostsPage(props){
     return (
-        <AllPosts posts={DUMMY_POSTS}/>
+        <AllPosts posts={props.posts}/>
     )
 
 }
+
+export function getStaticProps() {
+    const allPosts = getAllPosts();
+  
+    return {
+      props: {
+        posts: allPosts,
+      },
+      // Next.js will attempt to re-generate the page every 10 minutes besides build time
+      revalidate: 600
+    };
+  }
