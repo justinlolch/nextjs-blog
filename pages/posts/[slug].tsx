@@ -1,9 +1,20 @@
+import Head from "next/head";
+import { Fragment } from "react";
 import PostContent from "../../components/posts/post-detail/post-content";
 import { getPostData, getPostsFiles } from "../../lib/posts-util";
 
 // Using slug (getting-posts-xxx) instead of [id] (/posts/[id]) => more search engine friendly and human readable
 export default function PostDetailPage(props) {
-  return <PostContent post={props.post} />;
+  const { post } = props;
+  return (
+    <Fragment>
+      <Head>
+        <title>{post.title}</title>
+        <meta name="description" content={post.excerpt} />
+      </Head>
+      <PostContent post={post} />
+    </Fragment>
+  );
 }
 
 export function getStaticProps(context) {
