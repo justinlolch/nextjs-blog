@@ -1,6 +1,7 @@
 import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
+import { PostData } from "../interface/interface";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -14,7 +15,7 @@ export function getPostData(postIdentifier) {
   const fileContent = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(fileContent);
 
-  const postData = {
+  const postData: PostData = {
     slug: postSlug,
     ...data,
     content,

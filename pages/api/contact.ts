@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+import { Message } from "../../interface/interface";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
     }
   
     // Store it in a database
-    const newMessage = {
+    const newMessage: Message = {
       email,
       name,
       message,
